@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "t1000"
+version = "1.0.0"
+dependencies = [
+    "keyboard",
+    "pyperclip",
+    "python-dotenv",
+    "google-genai",
+    "openai",
+]
+
+[project.scripts]
+t1000 = "main:start"
