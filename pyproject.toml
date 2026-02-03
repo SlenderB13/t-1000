@@ -14,4 +14,4 @@ dependencies = [
 ]
 
 [project.scripts]
-t1000 = "main:start"
+t1000 = "main:main"

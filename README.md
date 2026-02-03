@@ -23,16 +23,19 @@ python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
 # ou .\.venv\Scripts\activate no Windows
 ```
-4. Crie um arquivo `.env` e adicione nele sua chave Google ou OpenAI:
-```env
-GOOGLE_KEY='<sua_chave_aqui>'
-# ou
-OPENAI_KEY='<sua_chave_aqui>'
-```
 3. Instale em modo editável:
 ```Bash
 pip install -e .
 ```
+
+## Configuração
+É necessário que sua chave de API esteja no arquivo de configuração. Para isso:
+1. Execute o programa passando a flag de configuração:
+```bash
+t1000 --configure # ou [-c]
+```
+2. O arquivo de configuração se abrirá automaticamente.
+3. Cole sua chave de API no local indicado.
 
 ## Rodando o programa
 

@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 import keyboard
 import pyperclip
 import time
@@ -11,27 +12,31 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 
+CONFIG_FILE = Path.home()/'.t1000.env'
 TRANSLATOR = 'google'
-if len(sys.argv) > 1:
-    arg = sys.argv[1].lower()
-    if arg in ['--google', '-g']:
-        TRANSLATOR = 'google'
-    elif arg in ['--openai', '-o']:
-        TRANSLATOR = 'openai'
 
-# identifies where the main file is located
-# and using it to look for the .env (it helps in case of global installation)
-script_dir = Path(__file__).parent.absolute()
-load_dotenv(script_dir/'.env')
 
-if TRANSLATOR == 'google':
-    API_KEY = os.environ.get("OPENAI_KEY", "")
-    if API_KEY == "":
-        raise Exception("Env variable named OPENAI_KEY not found")
-elif TRANSLATOR == 'openai':
-    API_KEY = os.environ.get("GOOGLE_KEY", "")
-    if API_KEY == "":
-        raise Exception("Env variable named GOOGLE_KEY not found")
+def open_config():
+    if not CONFIG_FILE.exists():
+        print('Arquivo de configuração não existe! Criando...')
+        CONFIG_FILE.write_text('GOOGLE_KEY=<sua_chave_aqui> # ou OPENAI_KEY=<sua_chave_aqui>', encoding='utf-8')
+
+    print('Abrindo arquivo de configuração')
+    if sys.platform == "win32":
+        os.startfile(CONFIG_FILE)
+    elif sys.platform == "darwin":
+        subprocess.call(["open", CONFIG_FILE]) # macOS
+    else:
+        try:
+            # trying to open a GUI editor with xdg-open
+            subprocess.run(["xdg-open", str(CONFIG_FILE)], check=True, stderr=subprocess.DEVNULL) # devnull to avoid printing errors
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            # if it fails, try to open a TUI editor
+            editor = os.environ.get('EDITOR', 'nano')
+            print(f"Interface gráfica não detectada. Abrindo com {editor}...")
+            subprocess.call([editor, str(CONFIG_FILE)])
+
+    sys.exit(0)
 
 
 def translate_with_google(selected_text):
@@ -105,7 +110,7 @@ def on_triggered():
     keyboard.press_and_release('ctrl+v')
 
 
-def start():
+def run():
     print(f"Running T-1000 with {TRANSLATOR}... Press Ctrl+Alt+R to translate the selected text.")
     # Register the hotkey
     keyboard.add_hotkey('ctrl+alt+r', on_triggered)
@@ -114,5 +119,32 @@ def start():
     keyboard.wait()
 
 
+def main():
+    if len(sys.argv) > 1:
+        arg = sys.argv[1].lower()
+        print('arg fucking here', arg)
+        if arg in ['--google', '-g']:
+            TRANSLATOR = 'google'
+        elif arg in ['--openai', '-o']:
+            TRANSLATOR = 'openai'
+        elif arg in ['--config', '-c']:
+            open_config()
+
+    # identifies where the main file is located
+    # and using it to look for the .env (it helps in case of global installation)
+    script_dir = Path.home()
+    load_dotenv(script_dir/'.t1000.env')
+
+    if TRANSLATOR == 'google':
+        API_KEY = os.environ.get("GOOGLE_KEY", "")
+        if API_KEY == "":
+            raise Exception("Env variable named GOOGLE_KEY not found")
+    elif TRANSLATOR == 'openai':
+        API_KEY = os.environ.get("OPENAI_KEY", "")
+        if API_KEY == "":
+            raise Exception("Env variable named OPENAI_KEY not found")
+
+    run()
+
 if __name__ == '__main__':
-    start()
+    main()
