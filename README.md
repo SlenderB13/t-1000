@@ -4,6 +4,9 @@ O T-1000 permite traduzir qualquer texto diretamente da sua caixa de input. Ele 
 
 ## Instalação
 
+> [!WARNING]
+> Importante: No momento, apenas Windows é suportado. Suporte à Linux pode ser adicionado em breve.
+
 Você pode instalar o T-1000 de duas formas:
 
 ### Opção 1: Via pipx (Recomendado)
