@@ -14,7 +14,6 @@ from pathlib import Path
 
 CONFIG_FILE = Path.home()/'.t1000.env'
 TRANSLATOR = 'google'
-API_KEY='' # leave empty, program will replace it
 
 
 def open_config():
@@ -44,6 +43,10 @@ def translate_with_google(selected_text):
     """
     This google is gemini, not google translator.
     """
+    API_KEY = os.environ.get("GOOGLE_KEY", "")
+    if API_KEY == "":
+        raise Exception("Env variable named GOOGLE_KEY not found")
+
     logging.info('Translating with google...')
     client = genai.Client(api_key=API_KEY)
     language = selected_text.split(':')[0]
@@ -68,6 +71,10 @@ def translate_with_openai(selected_text):
     sending the text to chatgpt to translate it.
     google translator translation is really bad.
     """
+    API_KEY = os.environ.get("OPENAI_KEY", "")
+    if API_KEY == "":
+        raise Exception("Env variable named OPENAI_KEY not found")
+
     logging.info('Translating with google...')
     client = OpenAI(api_key=API_KEY)
     language = selected_text.split(':')[0]
@@ -130,20 +137,7 @@ def main():
         elif arg in ['--config', '-c']:
             open_config()
 
-    # identifies where the main file is located
-    # and using it to look for the .env (it helps in case of global installation)
-    script_dir = Path.home()
-    load_dotenv(script_dir/'.t1000.env')
-
-    if TRANSLATOR == 'google':
-        API_KEY = os.environ.get("GOOGLE_KEY", "")
-        if API_KEY == "":
-            raise Exception("Env variable named GOOGLE_KEY not found")
-    elif TRANSLATOR == 'openai':
-        API_KEY = os.environ.get("OPENAI_KEY", "")
-        if API_KEY == "":
-            raise Exception("Env variable named OPENAI_KEY not found")
-
+    load_dotenv(Path.home()/'.t1000.env')
     run()
 
 if __name__ == '__main__':
