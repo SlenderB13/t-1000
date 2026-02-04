@@ -75,7 +75,7 @@ def translate_with_openai(selected_text):
     if API_KEY == "":
         raise Exception("Env variable named OPENAI_KEY not found")
 
-    logging.info('Translating with google...')
+    logging.info('Translating with openai...')
     client = OpenAI(api_key=API_KEY)
     language = selected_text.split(':')[0]
     text = selected_text.split(':')[1]
@@ -108,6 +108,7 @@ def on_triggered():
     keyboard.press_and_release('ctrl+a')
 
     # leaving as elif so we can have more options, such as claude or whatever.
+    global TRANSLATOR
     if TRANSLATOR == 'google':
         new_text = translate_with_google(original_text)
     elif TRANSLATOR == 'openai':
@@ -119,6 +120,7 @@ def on_triggered():
 
 
 def run():
+    global TRANSLATOR
     print(f"Running T-1000 with {TRANSLATOR}... Press Ctrl+Alt+R to translate the selected text.")
     # Register the hotkey
     keyboard.add_hotkey('ctrl+alt+r', on_triggered)
@@ -128,6 +130,7 @@ def run():
 
 
 def main():
+    global TRANSLATOR
     if len(sys.argv) > 1:
         arg = sys.argv[1].lower()
         if arg in ['--google', '-g']:
