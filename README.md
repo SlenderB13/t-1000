@@ -35,7 +35,7 @@ pip install -e .
 É necessário que sua chave de API esteja no arquivo de configuração. Para isso:
 1. Execute o programa passando a flag de configuração:
 ```bash
-t1000 --configure # ou [-c]
+t1000 --config # ou -c
 ```
 2. O arquivo de configuração se abrirá automaticamente.
 3. Cole sua chave de API no local indicado.
