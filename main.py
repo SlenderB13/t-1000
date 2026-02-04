@@ -14,6 +14,7 @@ from pathlib import Path
 
 CONFIG_FILE = Path.home()/'.t1000.env'
 TRANSLATOR = 'google'
+API_KEY='' # leave empty, program will replace it
 
 
 def open_config():
@@ -122,7 +123,6 @@ def run():
 def main():
     if len(sys.argv) > 1:
         arg = sys.argv[1].lower()
-        print('arg fucking here', arg)
         if arg in ['--google', '-g']:
             TRANSLATOR = 'google'
         elif arg in ['--openai', '-o']:
