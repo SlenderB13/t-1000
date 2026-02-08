@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 import keyboard
+import pynput
 import pyperclip
 import time
 from openai import OpenAI
@@ -14,6 +15,7 @@ from pathlib import Path
 
 CONFIG_FILE = Path.home()/'.t1000.env'
 TRANSLATOR = 'google'
+k_controller = pynput.keyboard.Controller()
 
 
 def open_config():
@@ -119,13 +121,61 @@ def on_triggered():
     keyboard.press_and_release('ctrl+v')
 
 
+def on_triggered_linux():
+    k_controller.release(pynput.keyboard.Key.ctrl)
+    k_controller.release(pynput.keyboard.Key.alt)
+    k_controller.release('r')
+
+    with k_controller.pressed(pynput.keyboard.Key.ctrl):
+        k_controller.press('c')
+        k_controller.release('c')
+
+    time.sleep(0.1)
+
+    original_text = pyperclip.paste()
+
+    if not original_text:
+        return
+
+    # Pasting intermediary text to indicate that the translation is happening.
+    pyperclip.copy(f'Traduzindo (pode levar alguns segundos)... {original_text}')
+
+    with k_controller.pressed(pynput.keyboard.Key.ctrl):
+        k_controller.press('v')
+        k_controller.release('v')
+
+    # leaving as elif so we can have more options, such as claude or whatever.
+    global TRANSLATOR
+    if TRANSLATOR == 'google':
+        new_text = translate_with_google(original_text)
+    elif TRANSLATOR == 'openai':
+        new_text = translate_with_openai(original_text)
+
+    with k_controller.pressed(pynput.keyboard.Key.ctrl):
+        k_controller.press('a')
+        k_controller.release('a')
+
+    # Pasting the new text.
+    pyperclip.copy(new_text)
+
+    with k_controller.pressed(pynput.keyboard.Key.ctrl):
+        k_controller.press('v')
+        k_controller.release('v')
+
+
 def run():
     global TRANSLATOR
     print(f"Running T-1000 with {TRANSLATOR}... Press Ctrl+Alt+R to translate the selected text.")
     # Register the hotkey
+
+    if sys.platform == "linux":
+        with pynput.keyboard.GlobalHotKeys({'<ctrl>+<alt>+r': on_triggered_linux,}) as listener:
+            listener.join()
+
+        return
+
     keyboard.add_hotkey('ctrl+alt+r', on_triggered)
 
-    # Keep the program running
     keyboard.wait()
 
 
