@@ -12,7 +12,8 @@ dependencies = [
     "python-dotenv",
     "google-genai",
     "openai",
-    "dotenv>=0.9.9",
+    "dotenv==0.9.9",
+    "pynput==1.8.1"
 ]
 
 [project.scripts]
