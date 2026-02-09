@@ -7,7 +7,6 @@ name = "t1000"
 version = "1.0.3"
 requires-python = ">=3.13"
 dependencies = [
-    "keyboard",
     "pyperclip",
     "python-dotenv",
     "google-genai",

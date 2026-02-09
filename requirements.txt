@@ -1,7 +1,6 @@
 google-genai
 openai
 python-dotenv
-keyboard
 pyperclip
 dotenv==0.9.9
 pynput==1.8.1

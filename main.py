@@ -1,7 +1,6 @@
 import os
 import sys
 import subprocess
-import keyboard
 import pynput
 import pyperclip
 import time
@@ -92,36 +91,6 @@ def translate_with_openai(selected_text):
 
 
 def on_triggered():
-    # Releasing the pressed buttons to not interfere with the ctrl-c command.
-    keyboard.release('ctrl')
-    keyboard.release('alt')
-    keyboard.release('r')
-
-    keyboard.send('ctrl+c')
-    time.sleep(0.1)
-
-    original_text = pyperclip.paste()
-    if not original_text:
-        return
-
-    # Pasting intermediary text to indicate that the translation is happening.
-    pyperclip.copy(f'Traduzindo (pode levar alguns segundos)... {original_text}')
-    keyboard.press_and_release('ctrl+v')
-    keyboard.press_and_release('ctrl+a')
-
-    # leaving as elif so we can have more options, such as claude or whatever.
-    global TRANSLATOR
-    if TRANSLATOR == 'google':
-        new_text = translate_with_google(original_text)
-    elif TRANSLATOR == 'openai':
-        new_text = translate_with_openai(original_text)
-
-    # Pasting the new text.
-    pyperclip.copy(new_text)
-    keyboard.press_and_release('ctrl+v')
-
-
-def on_triggered_linux():
     k_controller.release(pynput.keyboard.Key.ctrl)
     k_controller.release(pynput.keyboard.Key.alt)
     k_controller.release('r')
@@ -146,6 +115,7 @@ def on_triggered_linux():
 
     # leaving as elif so we can have more options, such as claude or whatever.
     global TRANSLATOR
+
     if TRANSLATOR == 'google':
         new_text = translate_with_google(original_text)
     elif TRANSLATOR == 'openai':
@@ -168,15 +138,8 @@ def run():
     print(f"Running T-1000 with {TRANSLATOR}... Press Ctrl+Alt+R to translate the selected text.")
     # Register the hotkey
 
-    if sys.platform == "linux":
-        with pynput.keyboard.GlobalHotKeys({'<ctrl>+<alt>+r': on_triggered_linux,}) as listener:
-            listener.join()
-
-        return
-
-    keyboard.add_hotkey('ctrl+alt+r', on_triggered)
-
-    keyboard.wait()
+    with pynput.keyboard.GlobalHotKeys({'<ctrl>+<alt>+r': on_triggered,}) as listener:
+        listener.join()
 
 
 def main():
