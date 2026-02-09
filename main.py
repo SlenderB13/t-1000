@@ -73,7 +73,7 @@ def translate_with_google(selected_text):
     )
 
     logging.info('translation from google:', response.text)
-    
+
     return response.text
 
 
@@ -86,10 +86,15 @@ def translate_with_openai(selected_text):
     if API_KEY == "":
         raise Exception("Env variable named OPENAI_KEY not found")
 
+    if ':' not in selected_text:
+        return Errors.LanguageMissing
+
     logging.info('Translating with openai...')
+
     client = OpenAI(api_key=API_KEY)
+    
     language = selected_text.split(':')[0]
-    text = selected_text.split(':')[1]
+    text = ":".join(selected_text.split(':')[1:])
 
     response = client.responses.create(
         model="gpt-5-nano",
