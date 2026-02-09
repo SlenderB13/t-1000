@@ -1,3 +1,4 @@
+from enum import Enum
 import os
 import sys
 import subprocess
@@ -16,6 +17,8 @@ CONFIG_FILE = Path.home()/'.t1000.env'
 TRANSLATOR = 'google'
 k_controller = pynput.keyboard.Controller()
 
+class Errors(Enum):
+    LanguageMissing="language missing" 
 
 def open_config():
     if not CONFIG_FILE.exists():
@@ -48,10 +51,16 @@ def translate_with_google(selected_text):
     if API_KEY == "":
         raise Exception("Env variable named GOOGLE_KEY not found")
 
+    if ':' not in selected_text:
+        return Errors.LanguageMissing
+
     logging.info('Translating with google...')
+
     client = genai.Client(api_key=API_KEY)
+
     language = selected_text.split(':')[0]
-    text = selected_text.split(':')[1]
+    text = ":".join(selected_text.split(':')[1:])
+
     logging.info('Original text: ', text)
 
     response = client.models.generate_content(
@@ -64,6 +73,7 @@ def translate_with_google(selected_text):
     )
 
     logging.info('translation from google:', response.text)
+    
     return response.text
 
 
@@ -125,9 +135,12 @@ def on_triggered():
         k_controller.press('a')
         k_controller.release('a')
 
-    # Pasting the new text.
-    pyperclip.copy(new_text)
+    if new_text is Errors.LanguageMissing:
+        pyperclip.copy(f'(language missing) : {original_text}')                 
+    elif new_text != "":
+        pyperclip.copy(new_text)
 
+    # Pasting the new text.
     with k_controller.pressed(pynput.keyboard.Key.ctrl):
         k_controller.press('v')
         k_controller.release('v')
