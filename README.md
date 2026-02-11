@@ -4,8 +4,9 @@ O T-1000 permite traduzir qualquer texto diretamente da sua caixa de input. Ele 
 
 ## Instalação
 
-> [!WARNING]
-> Importante: No momento, apenas Windows é suportado. Suporte à Linux pode ser adicionado em breve.
+> [!NOTE]
+> Graças ao apoio do [Rafa Benicio](https://github.com/Rafael-Benicio), linux agora é parcialmente suportado.
+> Basta que seu compositor seja X11 e que você tenha um controlador de clipboard, como o `xclip`.
 
 Você pode instalar o T-1000 de duas formas:
 
